@@ -1,0 +1,42 @@
+--example speck file loader asset
+local assetHelper = asset.require('util/asset_helper')
+
+local dataPoints = {
+    Identifier = "DataPointsExample",
+    Renderable = {
+        Type = "RenderableBillboardsCloud",
+        Enabled = true,
+        Color = { 1.0, 0.4, 0.2 },
+        Opacity = .99,
+        ScaleFactor = 500.0,
+        File = asset.localResource('datapoints.speck'),
+        --what texture should be displayed
+        Texture = asset.localResource('crosstex.png'),
+        ColorOption = { "type" },
+        --sets the range of color keys
+        ColorRange = { { 0, 5 } },
+        --Defines a colormap file
+        ColorMap = asset.localResource("colors.cmap"),
+        TextColor = { 0.7, 0.7, 0.7, 1.0 },
+        TextSize = 20.50,
+        TextMinSize = 16.0,
+        Unit = "Mpc",
+        -- Fade in value in the same unit as "Unit"
+        FadeInDistances = { 0.05, 1.0 },
+        -- Max size in pixels
+        BillboardMaxSize = 10,
+        BillboardMinSize = 0.0,
+        --CorrectionSizeEndDistance = 22.0,
+        --CorrectionSizeFactor = 10.45
+        EnablePixelSizeControl = true
+    },
+    GUI = {
+        Name = "ExampleDataPoints",
+        Path = "/Examples"
+    }
+}
+
+
+
+
+assetHelper.registerSceneGraphNodesAndExport(asset, { dataPoints })
