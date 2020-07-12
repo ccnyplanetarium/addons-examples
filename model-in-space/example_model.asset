@@ -1,0 +1,85 @@
+local assetHelper = asset.require('util/asset_helper')
+--This transform gets the barycenter location to use as Parent
+local transforms = asset.require("scene/solarsystem/sun/transforms")
+local earthAsset = asset.require("scene/solarsystem/planets/earth/earth")
+--Define meters/parsec
+local PARSEC_CONSTANT = 3.0856776E16;
+
+
+local LightSources = {
+    {
+        Type = "SceneGraphLightSource",
+        Identifier = "Sun",
+        Node = transforms.SolarSystemBarycenter.Identifier,
+        Intensity = 1.0
+    },
+    {
+        Identifier = "Camera",
+        Type = "CameraLightSource",
+        Intensity = 1.0
+    }
+}
+
+local exampleModelHolder = {
+    Identifier = "GeoHolder",
+    Parent = "Earth",
+    Transform = {
+    Translation = {
+        Type = "StaticTranslation",
+        Position = {0,0,0}
+        },
+    -- this is a rotation which you can adjust in the GUI to rotate the model
+    Rotation = {
+        Type = "StaticRotation",
+        Rotation = {0,0,0}
+        }
+    },
+    GUI = {
+    Name = ModelHolder,
+    Path = '/exampleModel/'
+    }
+}
+
+local exampleModel = {
+    Identifier = "GeoModel",
+    Parent = exampleModelHolder.Identifier,
+    Transform = {
+          Scale = {
+            Type = "StaticScale",
+            Scale = 5e6
+        },
+        Rotation = {
+            Type = "StaticRotation",
+            Rotation = {0,0,0}
+        },
+        Translation = {
+            Type = "StaticTranslation",
+            Position = {0,0,0}
+        }
+
+    },
+    Renderable = {
+        Type = "RenderableModel",
+        Geometry = {
+            Type = "MultiModelGeometry",
+            GeometryFile = asset.localResource("geo.obj")
+        },
+        ColorTexture = asset.localResource("red.jpg"),
+        LightSources = LightSources,
+        PerformShading = true,
+        SpecularIntensity = 0.000000,
+        DiffuseIntensity = .3,
+        AmbientIntensity = .1,
+        DisableFaceCulling = false
+    },
+    GUI = {
+        Name = "Example3dModel",
+        Path = '/Examples'
+    }
+}
+
+
+
+assetHelper.registerSceneGraphNodesAndExport(asset, {
+    exampleModelHolder, exampleModel
+})
