@@ -1,0 +1,144 @@
+local assetHelper = asset.require('util/asset_helper')
+local transforms = asset.require("scene/solarsystem/sun/transforms")
+local earth = asset.require('scene/solarsystem/planets/earth/earth')
+local debugHelper = asset.require('util/debug_helper')
+
+local objectPositions = asset.localResource('globePositions.csv')
+local i = 1
+
+--function that reads the file
+local createPositions = function (guiPath, endurnacePositions)
+  local genPositions = {};
+  --skip the first line
+  local notFirstLine = false;
+
+  local distanceMultiplier = 3.2;
+  local baseScale = 1e17;
+  for line in io.lines(openspace.absPath(objectPositions)) do
+      if (notFirstLine) then
+        -- describes the data
+        local matchstring = '(.-),(.-),(.-),(.-)$'
+        local time, lat, long, labelTime = line:match(matchstring)
+        local vx = 	math.cos (math.rad (lat))*math.cos (math.rad (long))
+        local vy = 	math.cos (math.rad (lat))*math.sin (math.rad (long))
+        local vz =  math.sin (math.rad (lat))
+        local attachement = "Position"..i
+        local nx = 0
+        local ny = 0
+        local nz = 1
+        local ex = vy*nz-vz*ny
+        local ey = vz*nx-vx*nz
+        local ez = vx*ny-vy*nx
+        local aPosition = {
+          Identifier = 'Position'..i,
+          Parent = earth.Earth.Identifier,
+          Transform = {
+              Translation = {
+                  Type = "GlobeTranslation",
+                  Globe = earth.Earth.Identifier,
+                  Longitude =  tonumber(long),
+                  Latitude =  tonumber(lat),
+                  Altitude = 0.0,
+                  UseHeightMap = true
+              },
+              Rotation = {
+                  Type = "FixedRotation",
+                  XAxis = { vx, vy, vz },
+                  --Attached = attachement,
+                  --XAxis = earth.Earth.Identifier,
+                  --XAxisOrthogonal = true,
+                  --xAxis-InvertObject = true,
+                  YAxis = {ex, ey, ez},
+                  --YaxisOrthogonal = true,
+                  --ZAxis = {0,0,1},
+                  --ZAxisOrthogonal = true
+              }
+
+          },
+          Renderable = {
+              Type = "RenderableSphere",
+              Enabled = true,
+              Size = 50000,
+              Segments = 80,
+              Opacity = 1,
+              Texture = asset.localResource('addons-dev/trans-antarctic/light-blue-tex.png'),
+              Orientation = "Outside",
+          },
+          Tag = { "EndurancePosition" },
+          GUI = {
+              Name = 'object'..i,
+              Path = '/Examples/Orient-Objects-Globe'
+          }
+        }
+        table.insert(genPositions, aPosition);
+
+        local aLabel = {
+            Identifier = "PositionLabel"..i,
+            Parent = "Position"..i,
+            Renderable = {
+                Enabled = true,
+                Type = "RenderableLabels",
+                LabelText = labelTime,
+                FontSize = 50.0,
+                LabelSize = 2.5,
+                LabelMaxSize = 23.0,
+                LabelMinSize = 1.0,
+                LabelOrientationOption = "Camera View Direction",
+                BlendMode = "Additive"
+            },
+            Tag = { "endurance_labels" },
+            GUI = {
+                Name = "ObjectLabel"..i,
+                Path = "/Examples/Orient-Objects-Globe"
+            }
+        }
+        table.insert(genPositions, aLabel);
+        debugHelper.registerCartesianAxes(asset, {
+            Parent = "Position"..i,
+            Scale = 500000
+        })
+        i = i + 1
+      else
+        notFirstLine = true
+      end
+  end
+  return genPositions
+
+end
+
+
+
+
+
+
+local nodes = {}
+
+
+asset.onInitialize(function ()
+local objectPositions = asset.localResource('globePositions.csv')
+
+  nodes = createPositions('TransAtlantic', objectPositions)
+  for _, n in ipairs(nodes) do
+    openspace.addSceneGraphNode(n);
+  end
+
+end)
+
+asset.onDeinitialize(function ()
+  for _, n in ipairs(nodes) do
+    openspace.removeSceneGraphNode(n.Identifier);
+  end
+  for _, nn in ipairs(nodes2) do
+    openspace.removeSceneGraphNode(nn.Identifier);
+  end
+end)
+
+
+asset.meta = {
+    Name = "Objects",
+    Version = "1.0",
+    Description = "TestRotations",
+    Author = "James Hedberg",
+    URL = "https://jameshedberg.com",
+    License = "CC-BY"
+}
