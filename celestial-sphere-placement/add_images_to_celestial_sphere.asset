@@ -1,0 +1,208 @@
+local assetHelper = asset.require('util/asset_helper')
+local transforms = asset.require("scene/solarsystem/sun/transforms")
+local debugHelper = asset.require('util/debug_helper')
+
+
+local localimages = asset.localResource("SpaceImages")
+local datafile = asset.localResource("skypositions-ra-dec.csv")
+local i = 1
+
+--function that reads the file
+local createImages = function (guiPath, imagefile)
+  local genImages = {};
+  --skip the first line
+  local notFirstLine = false;
+  -- define parsec to meters
+  local PARSEC_CONSTANT = 3.0856776E16;
+
+
+  local baseScale = 1e15;
+
+  for line in io.lines(openspace.absPath(imagefile)) do
+      if (notFirstLine) then
+        -- describes the data
+        local matchstring = '(.-),(.-),(.-),(.-),(.-),(.-),(.-),(.-),(.-)$'
+        local group, subgroup, name, scale, imageName, distance, ra, dec, northRotate = line:match(matchstring)
+
+
+        -- local northRotate = 0
+        --local distance = 130*PARSEC_CONSTANT
+        -- convert ra dec to l b
+        local lncp = 122.93192
+        local alphaG = math.rad(192.85948)
+        local deltaG = math.rad(27.12825)
+        local delta = math.rad(dec)
+        local alpha = math.rad(ra)
+
+        -- tranform RA and DEC to galactic l and b
+
+        local l = lncp - math.deg(math.atan((math.cos(delta) * math.sin(alpha - alphaG)) , (math.sin(delta) * math.cos(deltaG) -
+ math.cos(delta)* math.sin(deltaG) * math.cos(alpha-alphaG))  ) )
+
+        local b = math.deg( math.asin( math.sin(delta)*math.sin(deltaG)+math.cos(delta)*math.cos(deltaG)*math.cos(alpha-alphaG) ) )
+
+        -- find the cartesian x y and z from l and b
+
+        local x = distance * math.cos(math.rad(b))*math.cos(math.rad(l))
+        local y = distance * math.cos(math.rad(b))*math.sin(math.rad(l))
+        local z = distance * math.sin(math.rad(b))
+
+        --openspace.printDebug("Hi HI HI")
+
+        -- find normal vector to galactic sphere using l,b
+        -- call it a
+        local ax = 	math.cos (math.rad (tonumber(b)))*math.cos (math.rad (tonumber(l)))
+        local ay = 	math.cos (math.rad (tonumber(b)))*math.sin (math.rad (tonumber(l)))
+        local az =  math.sin (math.rad (tonumber(b)))
+
+        -- galactic north unit vector in galactic coordinates
+        local nx = 0
+        local ny = 0
+        local nz = 1
+
+        -- equatorial north unit vector in galactic coordinates
+        local eqnx = -0.483835
+        local eqny = 0.746982
+        local eqnz = 0.455984
+
+        local eqnxprime = eqnx*math.cos (math.rad (northRotate)) - eqny*math.sin (math.rad(northRotate))
+        local eqnyprime = eqnx*math.sin (math.rad (northRotate)) + eqny*math.cos (math.rad(northRotate))
+        local eqnzprime = eqnz
+
+        -- galactic east on the galactic sphere
+        local ex = ny*az-nz*ay
+        local ey = nz*ax-nx*az
+        local ez = nx*ay-ny*ax
+
+        -- galatic north on the galactic sphere
+        local nax = ay*ez-az*ey
+        local nay = az*ex-ax*ez
+        local naz = ax*ey-ay*ex
+
+        local naxprime = nax*math.cos (math.rad (northRotate)) - nay*math.sin (math.rad(northRotate))
+        local nayprime = nax*math.sin (math.rad (northRotate)) + nay*math.cos (math.rad(northRotate))
+        local nazprime = naz
+
+        --local nprimex = nax*math.cos (math.rad (GalToEq+northRotate)) - nay*math.sin (math.rad(GalToEq+northRotate))
+        --local nprimey = nax*math.sin (math.rad (GalToEq+northRotate)) + nay*math.cos (math.rad(GalToEq+northRotate))
+        --local nprimez = naz
+
+        -- normal vector on the equatorial sphere
+        local eqax = 	math.cos (math.rad (tonumber(dec)))*math.cos (math.rad (tonumber(ra)))
+        local eqay = 	math.cos (math.rad (tonumber(dec)))*math.sin (math.rad (tonumber(ra)))
+        local eqaz =  math.sin (math.rad (tonumber(dec)))
+
+        -- east equatorial unit vector in galactic coordinates
+        -- East @ the original position a on the sphere is E = Equatorial North CROSS a
+        local eqex = eqny*az-eqnz*ay
+        local eqey = eqnz*ax-eqnx*az
+        local eqez = eqnx*ay-eqny*ax
+
+        -- East @ the original position a on the sphere is E = Equatorial North CROSS a
+        --local eqex = eqnyprime*az-eqnzprime*ay
+        --local eqey = eqnzprime*ax-eqnxprime*az
+        --local eqez = eqnxprime*ay-eqnyprime*ax
+
+        -- north equatorial unit vector in galactic coordinates
+        -- Equatorial North @ point a on the sphere is then EqNa = a CROSS E
+        local eqnax = ay*eqez-az*eqey
+        local eqnay = az*eqex-ax*eqez
+        local eqnaz = ax*eqey-ay*eqex
+
+        -- add small north rotation based on image
+        -- not currenlty functioning correctly (Nov 2, 2020)
+        local eqnaxPrime = eqnax*math.cos (math.rad (northRotate)) - eqnay*math.sin (math.rad(northRotate))
+        local eqnayPrime = eqnax*math.sin (math.rad (northRotate)) + eqnay*math.cos (math.rad(northRotate))
+        local eqnazPrime = eqnaz
+
+        group = (group == '' and globe or group)
+
+        local anImage = {
+          Identifier = 'Position'..i,
+          Parent = transforms.SolarSystemBarycenter.Identifier,
+          Transform = {
+              Translation = {
+                  Type = "StaticTranslation",
+                  -- position is in parsecs from the SolarSystemBarycenter, so convert to meters
+                  Position = {
+                    tonumber(x) * PARSEC_CONSTANT,
+                    tonumber(y) * PARSEC_CONSTANT,
+                    tonumber(z) * PARSEC_CONSTANT
+                  }
+              },
+              Rotation = {
+                  Type = "FixedRotation",
+
+                  --point the normal towards the center of the galactic sphere
+                  ZAxis = {-ax, -ay, -az},
+                  --rotate the y axis to be aligned with the equatorial north
+                  YAxis = {eqnax, eqnay, eqnaz}
+              },
+              Scale = {
+                  Type = "StaticScale",
+                  Scale = 50
+              }
+
+          },
+          Renderable = {
+              Type = "RenderablePlaneImageLocal",
+              Size = tonumber(baseScale)*tonumber(scale),
+              Enabled = true,
+              Origin = "Center",
+              Billboard = false,
+              LazyLoading = false,
+              Texture = localimages .. "/" .. imageName,
+              BlendMode = "Normal",
+              Opacity = 1.0
+          },
+          Tag = { "SpaceImages", group },
+          GUI = {
+              Name = name .. ' Image',
+              Path = '/Other/' .. guiPath
+          }
+        }
+        table.insert(genImages, anImage);
+
+        --debugHelper.registerCartesianAxes(asset, {
+        --  Parent = "Position"..i,
+        --  Scale = 1e16
+        --})
+
+        i = i + 1
+
+      else
+        notFirstLine = true
+      end
+  end
+  return genImages
+end
+
+
+local nodes = {}
+
+asset.onInitialize(function ()
+  --local imagesCSV = images .. "/images_data.csv"
+
+  nodes = createImages('ImagesInSpace', datafile)
+  for _, n in ipairs(nodes) do
+    openspace.addSceneGraphNode(n);
+  end
+  openspace.setPropertyValueSingle("Scene.EquatorialSphere.Renderable.Enabled", true)
+
+end)
+
+asset.onDeinitialize(function ()
+  for _, n in ipairs(nodes) do
+    openspace.removeSceneGraphNode(n.Identifier);
+  end
+end)
+
+
+asset.meta = {
+    Name = "Images In Space",
+    Version = "1.0",
+    Description = "Collection of Astronomy Images",
+    Author = "James Hedberg",
+    URL = "http://jameshedberg.com",
+    License = "CC-BY"
+}
