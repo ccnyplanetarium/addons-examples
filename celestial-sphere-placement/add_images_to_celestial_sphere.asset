@@ -199,10 +199,10 @@ end)
 
 
 asset.meta = {
-    Name = "Images In Space",
+    Name = "Add Images Tangent to Celestial Sphere",
     Version = "1.0",
-    Description = "Collection of Astronomy Images",
+    Description = "A tool to place an image tangent to the celestial sphere at a given location in RA and DEC and DISTANCE",
     Author = "James Hedberg",
-    URL = "http://jameshedberg.com",
-    License = "CC-BY"
+    URL = "https://ccnyplanetarium.org",
+    License = "MIT license"
 }
