@@ -1,0 +1,19 @@
+local assetHelper = asset.require('util/asset_helper')
+local castorsystemHelper = asset.require('addons-dev/castor-system/generate_stars')
+
+local starOrbitsCSV = asset.localResource('data/star_data.csv')
+
+local nodes = {}
+
+asset.onInitialize(function ()
+  nodes = castorsystemHelper.getStars('Castor', starOrbitsCSV)
+  for _, n in ipairs(nodes) do
+    openspace.addSceneGraphNode(n);
+  end
+end)
+
+asset.onDeinitialize(function ()
+  for _, n in ipairs(nodes) do
+    openspace.removeSceneGraphNode(n.Identifier);
+  end
+end)

@@ -1,0 +1,24 @@
+local assetHelper = asset.require('util/asset_helper')
+local transforms = asset.require('scene/solarsystem/sun/transforms')
+asset.require("spice/base")
+
+local PARSEC_CONSTANT = 3.0856776E16;
+
+local CastorSystemCenter = {
+    Identifier = "CastorSystemCenter",
+    Parent = transforms.SolarSystemBarycenter.Identifier,
+    Transform = {
+        Translation = {
+            Type = "StaticTranslation",
+            Position = { -14.4813*PARSEC_CONSTANT,-1.8912*PARSEC_CONSTANT,6.0433*PARSEC_CONSTANT}
+            --Position = {0,0,0}
+        }
+    },
+    GUI = {
+        Name = "Castor System Center",
+        Path = "/Milky Way/CastorSystem",
+        Hidden = true
+    }
+}
+
+assetHelper.registerSceneGraphNodesAndExport(asset, {CastorSystemCenter})
