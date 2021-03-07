@@ -4,8 +4,8 @@ group,CastorC,CastorSystemCenter,.3,1000,34,0,0,180,2000 1 1 00:00:00,14000,.001
 group,CastorCa,CastorC,0,100,86.29,7.35,0,0,2000 1 1 00:00:00,0.002230137,0.6191,orange_fuzz.png
 group,CastorCb,CastorC,0,100,86.29,7.35,0,180,2000 1 1 00:00:00,0.002230137,0.6191,orange_fuzz.png
 group,CastorA,CastorAB,0,100,0,0,0,0,2000 1 1 00:00:00,445,.001,black.png
-group,CastorAa,CastorA,.5,50,90,0,0,0,2000 1 1 00:00:00,0.0246575,2.4,blue_fuzz.png
-group,CastorAb,CastorA,.5,50,90,0,0,180,2000 1 1 00:00:00,0.002230137,1,orange_fuzz.png
+group,CastorAa,CastorA,.5,10,90,0,0,0,2000 1 1 00:00:00,0.0252405479,2.4,blue_fuzz.png
+group,CastorAb,CastorA,.5,80,90,0,0,180,2000 1 1 00:00:00,0.0252405479,1,orange_fuzz.png
 group,CastorB,CastorAB,0,100,0,0,0,180,2000 1 1 00:00:00,445,.001,black.png
-group,CastorBa,CastorB,0,50,90,0,0,0,2000 1 1 00:00:00,0.00802273973,3.3,blue_fuzz.png
+group,CastorBa,CastorB,0,10,90,0,0,0,2000 1 1 00:00:00,0.00802273973,3.3,blue_fuzz.png
 group,CastorBb,CastorB,0,50,90,0,0,180,2000 1 1 00:00:00,0.00802273973,.2,orange_fuzz.png
