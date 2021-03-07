@@ -1,0 +1,38 @@
+local assetHelper = asset.require("util/asset_helper")
+local transforms = asset.require("./transforms")
+local startextures = asset.localResource("textures")
+
+
+
+local CastorGlare = {
+    Identifier = "CastorGlare",
+    Parent = transforms.CastorSystemCenter.Identifier,
+    Renderable = {
+        Type = "RenderablePlaneImageLocal",
+        Size = 4E15,
+        Origin = "Center",
+        Billboard = true,
+        Texture = startextures .. "/halo.png",
+        BlendMode = "Additive",
+        Opacity = 0.65,
+        RenderableType = "PreDeferredTransparency"
+    },
+      GUI = {
+        Name = "Castor Glare",
+        Path = "/Milky Way/CastorSystem/",
+        Description = [[ Castor glare effect. Enabled by default instead of sun orb.]]
+    }
+}
+
+assetHelper.registerSceneGraphNodesAndExport(asset, { CastorGlare })
+
+
+asset.meta = {
+    Name = "Castor Glare",
+    Version = "1.0",
+    Description = [[ Image plane with sun glare effect.]],
+    Author = "James Hedberg",
+    URL = "http://jameshedberg.com",
+    License = "MIT license",
+    Identifiers = {"CastorGlare"}
+}

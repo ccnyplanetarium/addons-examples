@@ -1,5 +1,5 @@
 local assetHelper = asset.require('util/asset_helper')
-local castorsystemHelper = asset.require('addons-dev/castor-system/generate_stars')
+local castorsystemHelper = asset.require('addons-examples/castor-system/generate_stars')
 
 local starOrbitsCSV = asset.localResource('data/star_data.csv')
 

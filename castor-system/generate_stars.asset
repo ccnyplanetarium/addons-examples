@@ -5,10 +5,13 @@ local systemCenter = transforms.CastorSystemCenter.Identifier
 
 --function that reads the file
 local AUtoKM = 1.496E8
+local startextures = asset.localResource("textures/")
 local getStars = function (guiPath, starsfile)
+
   local genStars = {};
   --skip the first line
   local notFirstLine = false;
+
 
   for line in io.lines(openspace.absPath(starsfile)) do
       if (notFirstLine) then
@@ -52,10 +55,10 @@ local getStars = function (guiPath, starsfile)
             Renderable = {
             Type = "RenderablePlaneImageLocal",
             Enabled = true,
-            Size = 1.0E13*tonumber(_starScale),
+            Size = 1.3927E9*tonumber(_starScale)*1000,
             Origin = "Center",
             Billboard = true,
-            Texture = asset.localResource('addons-dev/castor-system/textures/'.._starTex..''),
+            Texture = startextures .. _starTex,
             BlendMode = "Additive"
             },
 

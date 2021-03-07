@@ -1,3 +1,4 @@
 local assetHelper = asset.require('util/asset_helper')
 
-asset.require('addons-dev/castor-system/castor-starGroup')
+asset.require('addons-examples/castor-system/castor-starGroup')
+asset.require('addons-examples/castor-system/glare')
