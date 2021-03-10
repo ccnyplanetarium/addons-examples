@@ -3,11 +3,15 @@ local transforms = asset.require("scene/solarsystem/sun/transforms")
 local earth = asset.require('scene/solarsystem/planets/earth/earth')
 local debugHelper = asset.require('util/debug_helper')
 
-local objectPositions = asset.localResource('globePositions.csv')
+local objectPositions = asset.localResource("globepositions.csv")
+local textures = asset.localResource("textures")
+local models = asset.localResource("models")
+
+
 local i = 1
 
 --function that reads the file
-local createPositions = function (guiPath, endurnacePositions)
+local createPositions = function (guiPath, objectPositions)
   local genPositions = {};
   --skip the first line
   local notFirstLine = false;
@@ -43,28 +47,42 @@ local createPositions = function (guiPath, endurnacePositions)
               },
               Rotation = {
                   Type = "FixedRotation",
-                  XAxis = { vx, vy, vz },
-                  --Attached = attachement,
-                  --XAxis = earth.Earth.Identifier,
-                  --XAxisOrthogonal = true,
-                  --xAxis-InvertObject = true,
-                  YAxis = {ex, ey, ez},
-                  --YaxisOrthogonal = true,
-                  --ZAxis = {0,0,1},
-                  --ZAxisOrthogonal = true
-              }
+                  YAxis = {vx, vy, vz },
+                  ZAxis = {ex, ey, ez},
+
+              },
+              Scale = {
+                Type = "StaticScale",
+                Scale = 5000
+            },
 
           },
+
           Renderable = {
-              Type = "RenderableSphere",
-              Enabled = true,
-              Size = 50000,
-              Segments = 80,
-              Opacity = 1,
-              Texture = asset.localResource('addons-dev/trans-antarctic/light-blue-tex.png'),
-              Orientation = "Outside",
+              Type = "RenderableModel",
+              Geometry = {{
+                  Type = "MultiModelGeometry",
+                  GeometryFile = models .. "/chair.obj",
+                  ColorTexture = textures .. "/light-blue-tex.png"
+              }},
+              --ColorTexture = textures .. "/light-blue-tex.png",
+              LightSources = LightSources,
+              PerformShading = true,
+              SpecularIntensity = 0.000000,
+              DiffuseIntensity = .9,
+              AmbientIntensity = .9,
+              DisableFaceCulling = false
           },
-          Tag = { "EndurancePosition" },
+          --Renderable = {
+          --    Type = "RenderableSphere",
+          --    Enabled = true,
+          --    Size = 50000,
+          --    Segments = 80,
+          --    Opacity = 1,
+          --    Texture = textures .. "/light-blue-tex.png",
+          --    Orientation = "Outside",
+          --},
+          Tag = { "ObjectonSurface" },
           GUI = {
               Name = 'object'..i,
               Path = '/Examples/Orient-Objects-Globe'
@@ -93,10 +111,10 @@ local createPositions = function (guiPath, endurnacePositions)
             }
         }
         table.insert(genPositions, aLabel);
-        debugHelper.registerCartesianAxes(asset, {
-            Parent = "Position"..i,
-            Scale = 500000
-        })
+        --debugHelper.registerCartesianAxes(asset, {
+        --    Parent = 'Position'..i,
+        --    Scale = 500000
+        --})
         i = i + 1
       else
         notFirstLine = true
@@ -115,9 +133,9 @@ local nodes = {}
 
 
 asset.onInitialize(function ()
-local objectPositions = asset.localResource('globePositions.csv')
+--local objectPositions = asset.localResource('globepositions.csv')
 
-  nodes = createPositions('TransAtlantic', objectPositions)
+  nodes = createPositions('GlobeObjects', objectPositions)
   for _, n in ipairs(nodes) do
     openspace.addSceneGraphNode(n);
   end
@@ -128,9 +146,7 @@ asset.onDeinitialize(function ()
   for _, n in ipairs(nodes) do
     openspace.removeSceneGraphNode(n.Identifier);
   end
-  for _, nn in ipairs(nodes2) do
-    openspace.removeSceneGraphNode(nn.Identifier);
-  end
+
 end)
 
 
