@@ -4,6 +4,8 @@ local earth = asset.require('scene/solarsystem/planets/earth/earth')
 local debugHelper = asset.require('util/debug_helper')
 
 local objectPositions = asset.localResource('globePositions.csv')
+local imagesFolder = asset.localResource('images')
+
 local i = 1
 
 --function that reads the file
@@ -56,7 +58,7 @@ local createPositions = function (guiPath, endurnacePositions)
               Enabled = true,
               Origin = "Center",
               Billboard = false,
-              Texture = asset.localResource('addons-examples/orient-image-globe/reticlewhite.png'),
+              Texture = imagesFolder..'/reticle.png',
               BlendMode = "Additive",
               LazyLoading = false,
               Opacity = 0.2
@@ -108,9 +110,9 @@ local nodes = {}
 
 
 asset.onInitialize(function ()
-local objectPositions = asset.localResource('globePositions.csv')
+local objectPositionsList = objectPositions
 
-  nodes = createPositions('TransAtlantic', objectPositions)
+  nodes = createPositions('TransAtlantic', objectPositionsList)
   for _, n in ipairs(nodes) do
     openspace.addSceneGraphNode(n);
   end
