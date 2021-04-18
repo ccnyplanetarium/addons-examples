@@ -16,8 +16,7 @@ local createPositions = function (guiPath, endurnacePositions)
   --skip the first line
   local notFirstLine = false;
 
-  local distanceMultiplier = 3.2;
-  local baseScale = 1e17;
+
   for line in io.lines(openspace.absPath(objectPositions)) do
       if (notFirstLine) then
         -- describes the data
@@ -37,11 +36,11 @@ local createPositions = function (guiPath, endurnacePositions)
 
         local aPosition = {
           Identifier = 'SufaceImage'..i,
-          Parent = mars.Mars.Identifier,
+          Parent = earth.Earth.Identifier,
           Transform = {
               Translation = {
                   Type = "GlobeTranslation",
-                  Globe = mars.Mars.Identifier,
+                  Globe = earth.Earth.Identifier,
                   Longitude =  tonumber(long),
                   Latitude =  tonumber(lat),
                   Altitude = 1000.0,

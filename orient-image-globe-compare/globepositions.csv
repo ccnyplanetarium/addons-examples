@@ -1,2 +1,3 @@
-time, lat, long, label, sizeInMeters, imagename
+time, lat, long, label, widthInMeters divided by 2, imagename
 time holder,47.1987374,1.7002777,france,786800,france-2.png
+time holder,0.0,0.0,test,6378137,test-circle.png
