@@ -16,12 +16,11 @@ local createPositions = function (guiPath, endurnacePositions)
   --skip the first line
   local notFirstLine = false;
 
-
   for line in io.lines(openspace.absPath(objectPositions)) do
       if (notFirstLine) then
         -- describes the data
         local matchstring = '(.-),(.-),(.-),(.-),(.-),(.-)$'
-        local time, lat, long, label, size_in_m, imagename = line:match(matchstring)
+        local globe, lat, long, label, size_in_m, imagename = line:match(matchstring)
         local vx = 	math.cos (math.rad (lat))*math.cos (math.rad (long))
         local vy = 	math.cos (math.rad (lat))*math.sin (math.rad (long))
         local vz =  math.sin (math.rad (lat))
@@ -36,14 +35,14 @@ local createPositions = function (guiPath, endurnacePositions)
 
         local aPosition = {
           Identifier = 'SufaceImage'..i,
-          Parent = earth.Earth.Identifier,
+          Parent = globe,
           Transform = {
               Translation = {
                   Type = "GlobeTranslation",
-                  Globe = earth.Earth.Identifier,
+                  Globe = globe,
                   Longitude =  tonumber(long),
                   Latitude =  tonumber(lat),
-                  Altitude = 1000.0,
+                  Altitude = 500.0,
                   UseHeightMap = true
               },
               Rotation = {
@@ -55,7 +54,7 @@ local createPositions = function (guiPath, endurnacePositions)
           },
           Renderable = {
               Type = "RenderablePlaneImageLocal",
-              Size = tonumber(size_in_m),
+              Size = tonumber(size_in_m)/2,
               Enabled = true,
               Origin = "Center",
               Billboard = false,
@@ -66,7 +65,7 @@ local createPositions = function (guiPath, endurnacePositions)
           },
           Tag = { "imagemarkers" },
           GUI = {
-              Name = 'object'..i,
+              Name = 'image of '..label,
               Path = '/Examples/Orient-Images-Globe'
           }
         }
@@ -86,7 +85,7 @@ local createPositions = function (guiPath, endurnacePositions)
                 LabelOrientationOption = "Camera View Direction",
                 BlendMode = "Additive"
             },
-            Tag = { "endurance_labels" },
+            Tag = { "image_labels" },
         }
         table.insert(genPositions, aLabel);
         --debugHelper.registerCartesianAxes(asset, {
